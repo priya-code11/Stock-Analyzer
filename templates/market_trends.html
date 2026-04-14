@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Market Trends{% endblock title %}
+
+{% block body %}
+
+<style>
+  body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+  .card {
+    background-color: #1e293b;
+    border-radius: 12px;
+    border: none;
+  }
+  .buy { color: #22c55e; font-weight: bold; }
+  .sell { color: #ef4444; font-weight: bold; }
+  .hold { color: #facc15; font-weight: bold; }
+</style>
+
+<div class="col-md-10 p-4">
+
+  <table class="table table-dark table-striped text-center align-middle">
+
+  <thead>
+    <tr>
+      <th>Stock</th>
+      <th>Price (₹)</th>
+      <th>Change</th>
+      <th>Trend</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for s in stocks %}
+    <tr>
+      <td>{{ s.symbol }}</td>
+      <td>{{ s.price }}</td>
+
+      <td>
+        {% if s.change > 0 %}
+          <span style="color:#22c55e;">+{{ s.change }}</span>
+        {% else %}
+          <span style="color:#ef4444;">{{ s.change }}</span>
+        {% endif %}
+      </td>
+
+      <td>
+        {% if s.trend == "UP" %}
+          <span style="color:#22c55e; font-weight:bold;">🔼 UP</span>
+        {% else %}
+          <span style="color:#ef4444; font-weight:bold;">🔽 DOWN</span>
+        {% endif %}
+      </td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+</div>
+{% endblock body %}

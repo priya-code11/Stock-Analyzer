@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock title %}
+
+{% block body %}
+
+<style>
+  body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+  .card {
+    background-color: #1e293b;
+    border: none;
+    border-radius: 12px;
+  }
+  .highlight {
+    color: #38bdf8;
+  }
+</style>
+
+<div class="col-md-10 p-4">
+
+  <!-- HEADER -->
+  <div class="text-center mb-5">
+    <h1>About <span class="highlight">Our Project</span></h1>
+    <p class="text-secondary">
+      Smart decision-making using real-time data and AI logic
+    </p>
+  </div>
+
+  <!-- PROJECT INFO -->
+  <div class="card p-4 mb-4">
+    <h4>📊 Project Overview</h4>
+    <p>
+      The Stock AI Analyzer is a web-based application built using Django that helps users
+      make better trading decisions. It uses real-time stock data and applies technical
+      indicators to predict whether a stock should be <b>BUY</b>, <b>SELL</b>, or <b>HOLD</b>.
+    </p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="card p-4 mb-4">
+    <h4>🚀 Features</h4>
+    <ul>
+      <li>Real-time stock data using API</li>
+      <li>AI-based prediction system</li>
+      <li>Moving Average (MA20) analysis</li>
+      <li>RSI (Relative Strength Index)</li>
+      <li>Clean and modern dark UI</li>
+      <li>Portfolio tracking (future scope)</li>
+    </ul>
+  </div>
+
+  <!-- TECHNOLOGY -->
+  <div class="card p-4 mb-4">
+    <h4>⚙️ Technologies Used</h4>
+    <ul>
+      <li>Python (Django Framework)</li>
+      <li>HTML, CSS, Bootstrap</li>
+      <li>yFinance API for stock data</li>
+      <li>Pandas for data analysis</li>
+    </ul>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="card p-4 mb-4">
+    <h4>🧠 How It Works</h4>
+    <p>
+      The system fetches historical stock data and calculates key indicators like
+      Moving Average and RSI. Based on these values:
+    </p>
+    <ul>
+      <li><span class="text-success">BUY</span> → Price above average & strong trend</li>
+      <li><span class="text-danger">SELL</span> → Weak trend or falling market</li>
+      <li><span class="text-warning">HOLD</span> → Uncertain conditions</li>
+    </ul>
+  </div>
+
+  <!-- FUTURE -->
+  <div class="card p-4 mb-4">
+    <h4>🔮 Future Enhancements</h4>
+    <ul>
+      <li>Machine Learning model (LSTM)</li>
+      <li>Live candlestick charts</li>
+      <li>Auto-refresh real-time data</li>
+      <li>User login & portfolio saving</li>
+    </ul>
+  </div>
+
+</div>
+
+{% endblock body %}
