@@ -1,15 +1,65 @@
 from django.shortcuts import render,HttpResponse
 import pandas as pd
 import yfinance as yf
+import json
 
 
-
-# Create your views here.
 def index(request):
-    context = {
-        'var': "this is variable "
-    }
-    return render(request,'index.html',context)
+
+    symbol = "RELIANCE.NS"
+
+    if request.method == "POST":
+        symbol = request.POST.get("stock")
+
+    try:
+        stock = yf.Ticker(symbol)
+        df = stock.history(period="7d")
+
+        if df is None or df.empty or len(df) < 2:
+            raise ValueError("No data found")
+
+        price = df['Close'].iloc[-1]
+        prev = df['Close'].iloc[-2]
+        volume = df['Volume'].iloc[-1]
+
+        trend = "UP" if price > prev else "DOWN"
+
+        data = []
+        for i in range(len(df)):
+            data.append({
+                "date": df.index[i].strftime("%d %b"),
+                "open": round(df['Open'].iloc[i], 2),
+                "close": round(df['Close'].iloc[i], 2),
+                "high": round(df['High'].iloc[i], 2),
+                "low": round(df['Low'].iloc[i], 2),
+            })
+
+        labels = [d["date"] for d in data]
+        prices = [d["close"] for d in data]
+
+        context = {
+            "price": round(price, 2),
+            "volume": volume,
+            "trend": trend,
+            "data": data,
+            "labels": json.dumps(labels),
+            "prices": json.dumps(prices)
+        }
+
+    except Exception as e:
+        print("ERROR in index():", e)
+
+        # ✅ SAFE FALLBACK
+        context = {
+            "price": 0,
+            "volume": 0,
+            "trend": "DOWN",
+            "data": [],
+            "labels": "[]",
+            "prices": "[]"
+        }
+
+    return render(request, "index.html", context)
 
 def about(request):
     return render(request,'about.html')
@@ -84,62 +134,45 @@ def prediction_view(request):
 
 def market_trends(request):
     stocks_list = [
-    # 🇮🇳 Indian Stocks (NSE)
-    "RELIANCE.NS",
-    "TCS.NS",
-    "INFY.NS",
-    "HDFCBANK.NS",
-    "ICICIBANK.NS",
-    "SBIN.NS",
-    "ITC.NS",
-    "LT.NS",
-    "AXISBANK.NS",
-    "KOTAKBANK.NS",
-    "BHARTIARTL.NS",
-    "ASIANPAINT.NS",
-    "MARUTI.NS",
-    "TITAN.NS",
-    "ULTRACEMCO.NS",
+        # 🇮🇳 Indian Stocks
+        "RELIANCE.NS","TCS.NS","INFY.NS","HDFCBANK.NS","ICICIBANK.NS",
+        "SBIN.NS","ITC.NS","LT.NS","AXISBANK.NS","KOTAKBANK.NS",
+        "BHARTIARTL.NS","ASIANPAINT.NS","MARUTI.NS","TITAN.NS","ULTRACEMCO.NS",
 
-    # 🇺🇸 US Stocks
-    "AAPL",
-    "MSFT",
-    "GOOGL",
-    "AMZN",
-    "TSLA",
-    "META",
-    "NFLX",
-    "NVDA",
+        # 🇺🇸 US Stocks
+        "AAPL","MSFT","GOOGL","AMZN","TSLA","META","NFLX","NVDA",
 
-    # 💰 Crypto (optional - works in yfinance)
-    "BTC-USD",
-    "ETH-USD"
-]
+        # 💰 Crypto
+        "BTC-USD","ETH-USD"
+    ]
 
     results = []
 
     for symbol in stocks_list:
-        stock = yf.Ticker(symbol)
-        data = stock.history(period="5d")   # last few days
+        try:
+            stock = yf.Ticker(symbol)
+            data = stock.history(period="5d")
 
-        price = data['Close'].iloc[-1]
-        prev_price = data['Close'].iloc[-2]
+            # ✅ Safety check
+            if data is None or data.empty or len(data) < 2:
+                continue
 
-        change = price - prev_price
+            price = data['Close'].iloc[-1]
+            prev_price = data['Close'].iloc[-2]
 
-        if change > 0:
-            trend = "UP"
-        else:
-            trend = "DOWN"
+            change = price - prev_price
+            trend = "UP" if change > 0 else "DOWN"
 
-        results.append({
-            "symbol": symbol,
-            "price": round(price, 2),
-            "change": round(change, 2),
-            "trend": trend
-        })
+            results.append({
+                "symbol": symbol,
+                "price": round(price, 2),
+                "change": round(change, 2),
+                "trend": trend
+            })
+
+        except Exception as e:
+            print(f"Error in {symbol}: {e}")  # Debug
+            continue   # skip bad stock
 
     return render(request, "market_trends.html", {"stocks": results})
 
-def portfolio(request):
-    return render(request,'portfolio.html')
