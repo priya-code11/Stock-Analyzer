@@ -3,6 +3,58 @@
 
 {% block body %}
 
+<style>
+  body {
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e2e8f0;
+  }
+
+  /* Glass Effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .form-control {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: white;
+  }
+
+  .form-control::placeholder {
+    color: #94a3b8;
+  }
+
+  .form-control:focus {
+    background: rgba(255,255,255,0.08);
+    box-shadow: none;
+    color: white;
+  }
+
+  .btn-info {
+    background: linear-gradient(45deg, #38bdf8, #0ea5e9);
+    border: none;
+  }
+
+  .card-title {
+    font-size: 14px;
+    color: #94a3b8;
+  }
+
+  .card-value {
+    font-size: 26px;
+    font-weight: bold;
+  }
+
+  table {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+</style>
+
 <main class="col-md-10 p-4">
 
   <!-- Search -->
@@ -10,8 +62,8 @@
     {% csrf_token %}
     <div class="mb-4">
       <input list="stockList" name="stock"
-             class="form-control bg-dark text-white border-0"
-             placeholder="Search Stock (e.g. RELIANCE.NS, AAPL)">
+             class="form-control"
+             placeholder="🔍 Search Stock (RELIANCE.NS, AAPL)">
       
       <datalist id="stockList">
         <option value="RELIANCE.NS">
@@ -24,39 +76,39 @@
       </datalist>
     </div>
 
-    <button class="btn btn-info mb-3">Analyze</button>
+    <button class="btn btn-info mb-4">Analyze</button>
   </form>
 
   <!-- Cards -->
   <div class="row mb-4">
 
     <div class="col-md-4">
-      <div class="card p-3">
-        <h6>Stock Price</h6>
-        <h3 class="text-success">
+      <div class="glass p-4 text-center">
+        <div class="card-title">Stock Price</div>
+        <div class="card-value text-success">
           {% if price %} ₹{{ price }} {% else %} -- {% endif %}
-        </h3>
+        </div>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="card p-3">
-        <h6>Market Volume</h6>
-        <h3>
+      <div class="glass p-4 text-center">
+        <div class="card-title">Market Volume</div>
+        <div class="card-value">
           {% if volume %} {{ volume }} {% else %} -- {% endif %}
-        </h3>
+        </div>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="card p-3">
-        <h6>Trend</h6>
+      <div class="glass p-4 text-center">
+        <div class="card-title">Trend</div>
         {% if trend == "UP" %}
-          <h3 class="text-success">🔼 UP</h3>
+          <div class="card-value text-success">🔼 UP</div>
         {% elif trend == "DOWN" %}
-          <h3 class="text-danger">🔽 DOWN</h3>
+          <div class="card-value text-danger">🔽 DOWN</div>
         {% else %}
-          <h3>--</h3>
+          <div class="card-value">--</div>
         {% endif %}
       </div>
     </div>
@@ -64,8 +116,8 @@
   </div>
 
   <!-- Chart -->
-  <div class="card p-3 mb-4">
-    <h5>Stock Price Chart</h5>
+  <div class="glass p-4 mb-4">
+    <h5>📈 Stock Price Chart</h5>
 
     {% if labels and prices %}
       <canvas id="myChart" height="100"></canvas>
@@ -75,11 +127,11 @@
   </div>
 
   <!-- Table -->
-  <div class="card p-3">
-    <h5>Recent Data</h5>
+  <div class="glass p-4">
+    <h5>📊 Recent Data</h5>
 
     {% if data %}
-    <table class="table table-dark table-striped">
+    <table class="table table-dark table-striped mt-3">
       <thead>
         <tr>
           <th>Date</th>
@@ -127,26 +179,9 @@
         label: 'Stock Price',
         data: prices,
         borderColor: '#38bdf8',
-        tension: 0.4
-      }]
-    }
-  });
-</script>
-{% endif %}
-
-{% if labels and prices %}
-<script>
-  const ctx = document.getElementById('myChart');
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: {{ labels|safe }},
-      datasets: [{
-        label: 'Stock Price',
-        data: {{ prices|safe }},
-        borderColor: '#38bdf8',
-        tension: 0.4
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(56,189,248,0.1)'
       }]
     }
   });
