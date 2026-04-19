@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-@8jczu!r$x90vcch6uvn7v2x7r^-q&4h03h_)+nylrb$)n=8ft
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "stockanalyzer-03bz.onrender.com",
+    "127.0.0.1",
+    "localhost"
+]
 
 
 # Application definition
