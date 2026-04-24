@@ -1,137 +1,146 @@
 {% extends "base.html" %}
-{% block title %}Stock Analyzer{% endblock title %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 <style>
-  body {
-    background: linear-gradient(135deg, #0f172a, #020617);
-    color: #e2e8f0;
-  }
 
-  /* Glass Effect */
-  .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
+/* ===== LAYOUT ===== */
+.dashboard {
+  padding: 10px;
+}
 
-  .form-control {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    color: white;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+}
 
-  .form-control::placeholder {
-    color: #94a3b8;
-  }
+/* ===== CARD ===== */
+.card-pro {
+  background: #0a0a0a;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 18px;
+}
 
-  .form-control:focus {
-    background: rgba(255,255,255,0.08);
-    box-shadow: none;
-    color: white;
-  }
+/* ===== TOP BAR ===== */
+.top-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-  .btn-info {
-    background: linear-gradient(45deg, #38bdf8, #0ea5e9);
-    border: none;
-  }
+.form-control {
+  background: #111;
+  border: 1px solid #1f2937;
+  color: white;
+}
 
-  .card-title {
-    font-size: 14px;
-    color: #94a3b8;
-  }
+.btn-pro {
+  background: linear-gradient(135deg,#38bdf8,#6366f1);
+  border: none;
+  color: white;
+}
 
-  .card-value {
-    font-size: 26px;
-    font-weight: bold;
-  }
+/* ===== STATS ===== */
+.stat-box {
+  margin-bottom: 15px;
+}
 
-  table {
-    border-radius: 10px;
-    overflow: hidden;
-  }
+.stat-title {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ===== TREND ===== */
+.up { color: #22c55e; }
+.down { color: #ef4444; }
+
+/* ===== TABLE ===== */
+.table-pro {
+  width: 100%;
+}
+
+.table-pro th {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.table-pro td {
+  padding: 10px 0;
+  border-bottom: 1px solid #111;
+}
+
 </style>
 
-<main class="col-md-10 p-4">
+<div class="dashboard">
 
-  <!-- Search -->
+  <!-- 🔍 TOP BAR -->
   <form method="POST">
     {% csrf_token %}
-    <div class="mb-4">
-      <input list="stockList" name="stock"
-             class="form-control"
-             placeholder="🔍 Search Stock (RELIANCE.NS, AAPL)">
-      
-      <datalist id="stockList">
-        <option value="RELIANCE.NS">
-        <option value="TCS.NS">
-        <option value="INFY.NS">
-        <option value="HDFCBANK.NS">
-        <option value="AAPL">
-        <option value="MSFT">
-        <option value="TSLA">
-      </datalist>
-    </div>
+    <div class="top-bar">
 
-    <button class="btn btn-info mb-4">Analyze</button>
+      <input list="stockList" name="stock"
+             value="{{ symbol }}"
+             class="form-control"
+             placeholder="Search stock...">
+
+      <select name="range" class="form-control" style="max-width:120px;">
+        <option value="1d" {% if range == "1d" %}selected{% endif %}>1D</option>
+        <option value="7d" {% if range == "7d" %}selected{% endif %}>1W</option>
+        <option value="1mo" {% if range == "1mo" %}selected{% endif %}>1M</option>
+        <option value="1y" {% if range == "1y" %}selected{% endif %}>1Y</option>
+      </select>
+
+      <button class="btn btn-pro">Analyze</button>
+
+    </div>
   </form>
 
-  <!-- Cards -->
-  <div class="row mb-4">
+  <!-- 📊 MAIN GRID -->
+  <div class="grid">
 
-    <div class="col-md-4">
-      <div class="glass p-4 text-center">
-        <div class="card-title">Stock Price</div>
-        <div class="card-value text-success">
-          {% if price %} ₹{{ price }} {% else %} -- {% endif %}
-        </div>
-      </div>
+    <!-- LEFT: CHART -->
+    <div class="card-pro">
+      <div id="chart"></div>
     </div>
 
-    <div class="col-md-4">
-      <div class="glass p-4 text-center">
-        <div class="card-title">Market Volume</div>
-        <div class="card-value">
-          {% if volume %} {{ volume }} {% else %} -- {% endif %}
+    <!-- RIGHT: STATS -->
+    <div>
+
+      <div class="card-pro stat-box">
+        <div class="stat-title">Price</div>
+        <div class="stat-value text-success">₹{{ price }}</div>
+      </div>
+
+      <div class="card-pro stat-box">
+        <div class="stat-title">Volume</div>
+        <div class="stat-value">{{ volume }}</div>
+      </div>
+
+      <div class="card-pro stat-box">
+        <div class="stat-title">Trend</div>
+        <div class="stat-value {% if trend == 'UP' %}up{% else %}down{% endif %}">
+          {{ trend }}
         </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="glass p-4 text-center">
-        <div class="card-title">Trend</div>
-        {% if trend == "UP" %}
-          <div class="card-value text-success">🔼 UP</div>
-        {% elif trend == "DOWN" %}
-          <div class="card-value text-danger">🔽 DOWN</div>
-        {% else %}
-          <div class="card-value">--</div>
-        {% endif %}
-      </div>
     </div>
 
   </div>
 
-  <!-- Chart -->
-  <div class="glass p-4 mb-4">
-    <h5>📈 Stock Price Chart</h5>
+  <!-- 📋 TABLE -->
+  <div class="card-pro mt-4">
+    <table class="table-pro text-center">
 
-    {% if labels and prices %}
-      <canvas id="myChart" height="100"></canvas>
-    {% else %}
-      <p>No data available</p>
-    {% endif %}
-  </div>
-
-  <!-- Table -->
-  <div class="glass p-4">
-    <h5>📊 Recent Data</h5>
-
-    {% if data %}
-    <table class="table table-dark table-striped mt-3">
       <thead>
         <tr>
           <th>Date</th>
@@ -141,6 +150,7 @@
           <th>Low</th>
         </tr>
       </thead>
+
       <tbody>
         {% for row in data %}
         <tr>
@@ -152,40 +162,32 @@
         </tr>
         {% endfor %}
       </tbody>
-    </table>
-    {% else %}
-      <p>No stock data available</p>
-    {% endif %}
 
+    </table>
   </div>
 
-</main>
+</div>
 
-<!-- Chart JS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-{% if labels and prices %}
+<!-- 📊 CHART -->
+{% if candles %}
 <script>
-  const labels = JSON.parse('{{ labels|escapejs }}');
-  const prices = JSON.parse('{{ prices|escapejs }}');
+const candleData = JSON.parse('{{ candles|escapejs }}');
 
-  const ctx = document.getElementById('myChart');
+const options = {
+  chart: {
+    type: 'candlestick',
+    height: 420,
+    background: '#000'
+  },
+  theme: { mode: 'dark' },
+  series: [{ data: candleData }],
+  xaxis: {
+    labels: { style: { colors: '#9ca3af' } }
+  }
+};
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Stock Price',
-        data: prices,
-        borderColor: '#38bdf8',
-        tension: 0.4,
-        fill: true,
-        backgroundColor: 'rgba(56,189,248,0.1)'
-      }]
-    }
-  });
+new ApexCharts(document.querySelector("#chart"), options).render();
 </script>
 {% endif %}
 
-{% endblock body %}
+{% endblock %}

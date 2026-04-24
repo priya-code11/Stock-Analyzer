@@ -1,60 +1,216 @@
 <!doctype html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-        {% block title %}{% endblock title %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  </head>
-  <body>
-<style>
-  body {
-    background-color: #0f172a;
-    color: #e2e8f0;
-  }
-  .card {
-    background-color: #1e293b;
-    border: none;
-    border-radius: 12px;
-  }
-  .sidebar {
-    background-color: #020617;
-    min-height: 100vh;
-  }
-  .nav-link {
-    color: #cbd5f5;
-  }
-  .nav-link:hover {
-    color: #38bdf8;
-  }
-  .active {
-    color: #38bdf8 !important;
-  }
-</style>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock title %}</title>
 
-<header class="navbar bg-black p-3">
-  <span class="navbar-brand text-white">📈 Stock Analyzer</span>
-</header>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== ROOT DESIGN SYSTEM ===== */
+:root {
+  --bg: #000000;
+  --panel: #0a0a0a;
+  --soft: #111111;
+  --border: #1f2937;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #38bdf8;
+  --accent2: #6366f1;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: rgba(0,0,0,0.8);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  background: var(--panel);
+  min-height: 100vh;
+  border-right: 1px solid var(--border);
+}
+
+.nav-link {
+  color: var(--muted);
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  background: var(--soft);
+  color: white;
+}
+
+/* ACTIVE */
+.nav-link.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: white !important;
+  font-weight: 500;
+}
+
+/* ===== CONTENT ===== */
+.main-content {
+  padding: 24px;
+}
+
+/* ===== CARD ===== */
+.card-pro {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  transition: 0.2s;
+}
+
+.card-pro:hover {
+  border-color: var(--accent);
+}
+
+/* ===== INPUT ===== */
+.form-control {
+  background: var(--soft);
+  border: 1px solid var(--border);
+  color: white;
+}
+
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: none;
+  background: var(--soft);
+}
+
+/* ===== BUTTON ===== */
+.btn-pro {
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  border: none;
+  color: white;
+  font-weight: 500;
+}
+
+.btn-pro:hover {
+  opacity: 0.9;
+}
+
+/* ===== SMALL DETAILS ===== */
+.section-title {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.stat {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* ===== TABLE ===== */
+.table-pro {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-pro th {
+  color: var(--muted);
+  font-size: 13px;
+  padding-bottom: 10px;
+}
+
+.table-pro td {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== SCROLL ===== */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+}
+
+/* ===== SMOOTH FEEL ===== */
+* {
+  transition: background 0.2s, border 0.2s, transform 0.2s;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar px-4 py-3">
+  <span class="navbar-brand">📈 Stock Analyzer</span>
+</nav>
 
 <div class="container-fluid">
   <div class="row">
 
-    <!-- Sidebar -->
+    <!-- SIDEBAR -->
     <div class="col-md-2 sidebar p-3">
-      <h5 class="text-info">Menu</h5>
-      <ul class="nav flex-column mt-3">
-        <li><a class="nav-link active" href="{% url 'home' %}">Dashboard</a></li>
-        <li><a class="nav-link" href="/market_trends">Market Trends</a></li>
-        <li><a class="nav-link" href="/prediction">Predictions</a></li>
-        <li><a class="nav-link" href="/about">About</a></li>
+
+      <div class="mb-4 px-2 text-uppercase" style="font-size:12px;color:#6b7280;">
+        Navigation
+      </div>
+
+      <ul class="nav flex-column">
+        <li>
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+            Dashboard
+          </a>
+        </li>
+
+        <li>
+          <a class="nav-link" href="/market_trends">
+            Market Trends
+          </a>
+        </li>
+
+        <li>
+          <a class="nav-link" href="/prediction">
+            Predictions
+          </a>
+        </li>
+
+        <li>
+          <a class="nav-link" href="/about">
+            About
+          </a>
+        </li>
       </ul>
+
     </div>
 
-{% block body %}
+    <!-- CONTENT -->
+    <div class="col-md-10 main-content">
+      {% block body %}
+      {% endblock body %}
+    </div>
 
-{% endblock body %}
+  </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
