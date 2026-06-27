@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Market Trends{% endblock title %}
+
+{% block body %}
+
+<style>
+    /* ===== PAGE LAYOUT ===== */
+    .market-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 15px;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* ===== HEADER BLOCK ===== */
+    .market-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 16px;
+    }
+
+    .market-title {
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .live-status {
+        font-size: 11px;
+        font-weight: 600;
+        color: #22c55e;
+        background: rgba(34, 197, 94, 0.05);
+        border: 1px solid rgba(34, 197, 94, 0.15);
+        padding: 4px 12px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* LIVE STATUS PULSE INDICATOR */
+    .live-dot {
+        height: 6px;
+        width: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #22c55e;
+        animation: simple-pulse 1.5s infinite alternate;
+    }
+
+    @keyframes simple-pulse {
+        0% { opacity: 0.4; transform: scale(0.9); }
+        100% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* ===== TABLE PANEL CONFIGURATION ===== */
+    .table-panel {
+        background: #05070f;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* ===== CLEAN DATA TABLE ===== */
+    .table-pro {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .table-pro thead th {
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: #020308;
+    }
+
+    /* TABLE TEXT ALIGNMENTS */
+    .align-index { text-align: left; width: 50px; color: #374151; font-weight: 600; }
+    .align-stock { text-align: left; font-weight: 700; }
+    .align-price { text-align: right; font-family: 'SF Mono', Consolas, monospace; }
+    .align-change { text-align: right; font-family: 'SF Mono', Consolas, monospace; }
+    .align-trend { text-align: center; width: 140px; }
+
+    /* TABLE ROW BEHAVIOR */
+    .table-pro tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        transition: background 0.15s ease-in-out;
+    }
+
+    .table-pro tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .table-pro tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+        cursor: pointer;
+    }
+
+    .table-pro td {
+        padding: 14px 18px;
+        vertical-align: middle;
+    }
+
+    /* COLORS */
+    .stock-symbol { color: #ffffff; }
+    .stock-price { color: #e5e7eb; font-weight: 600; }
+    .text-up { color: #22c55e; font-weight: 600; }
+    .text-down { color: #ef4444; font-weight: 600; }
+
+    /* ===== BADGES ===== */
+    .badge-up {
+        background: rgba(34, 197, 94, 0.06);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .badge-down {
+        background: rgba(239, 68, 68, 0.06);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+</style>
+
+<!-- BOXICONS FOR SUBTLE VISUAL CUES -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<div class="market-container">
+
+    <!-- HEADER -->
+    <div class="market-header">
+        <div class="market-title">
+            <i class='bx bx-line-chart' style="color: #22c55e; font-size: 18px;"></i>
+            <span>Live Market Trends</span>
+        </div>
+        <div class="live-status">
+            <span class="live-dot"></span>
+            <span>Live Feed Connected</span>
+        </div>
+    </div>
+
+    <!-- MAIN TABLE PANEL -->
+    <div class="table-panel">
+        <table class="table-pro">
+            <thead>
+                <tr>
+                    <th class="align-index">#</th>
+                    <th class="align-stock">Stock</th>
+                    <th class="align-price">Price (₹)</th>
+                    <th class="align-change">Change</th>
+                    <th class="align-trend">Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stocks %}
+                <tr onclick="let sym = '{{ s.symbol }}'; window.location.href='/?stock=' + encodeURIComponent(sym);">
+                    <td class="align-index">{{ forloop.counter }}</td>
+
+                    <td class="align-stock stock-symbol">
+                        {{ s.symbol }}
+                    </td>
+
+                    <td class="align-price stock-price">
+                        ₹{{ s.price }}
+                    </td>
+
+                    <td class="align-change">
+                        {% if s.change > 0 %}
+                            <span class="text-up">+{{ s.change }}</span>
+                        {% else %}
+                            <span class="text-down">{{ s.change }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="align-trend">
+                        {% if s.trend == "UP" %}
+                            <span class="badge-up">
+                                <i class='bx bx-trending-up'></i> UP
+                            </span>
+                        {% else %}
+                            <span class="badge-down">
+                                <i class='bx bx-trending-down'></i> DOWN
+                            </span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center" style="padding: 40px; color: #4b5563;">
+                        <i class='bx bx-error-alt' style="font-size: 24px; margin-bottom: 8px; display: block; color: #ef4444;"></i>
+                        No stocks found in the current list.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock body %}

@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+{% block title %}AI Price Prediction Terminal{% endblock %}
+
+{% block body %}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<style>
+    /* ===== MODERN SYSTEM FRAMEWORK ===== */
+    body {
+        background-color: #02040a;
+        color: #f3f4f6;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* ===== GLASSMORPHISM TERMINAL PANELS ===== */
+    .card-pro {
+        background: rgba(10, 15, 30, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        transition: border-color 0.2s ease;
+    }
+
+    .card-pro:hover {
+        border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    /* ===== FORECAST CONTROL BAR ===== */
+    .control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 25px;
+    }
+
+    .search-group {
+        display: flex;
+        gap: 12px;
+        flex-grow: 1;
+        max-width: 650px;
+    }
+
+    .form-control-pro {
+        background: #090d16;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .form-control-pro:focus {
+        border-color: #38bdf8;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-pro {
+        background: linear-gradient(135deg, #0284c7, #4f46e5);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .btn-pro:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+    }
+
+    .btn-watchlist-pro {
+        background: rgba(245, 158, 11, 0.05);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-watchlist-pro:hover {
+        background: #fbbf24;
+        color: #02040a;
+    }
+
+    /* ===== TWO-COLUMN PREDICTION LAYOUT ===== */
+    .grid-main {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 992px) {
+        .grid-main {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ===== RIGHT SIDEBAR: PREDICTIVE METRICS ===== */
+    .stats-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .stat-box {
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Target Border Indicators */
+    .stat-box::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 4px; height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .stat-box.box-up::after { background: #22c55e; }
+    .stat-box.box-down::after { background: #ef4444; }
+
+    .stat-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #9ca3af;
+        margin-bottom: 6px;
+        font-weight: 700;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    /* Color states for visual direction hints */
+    .up { color: #22c55e; }
+    .down { color: #ef4444; }
+
+    /* ===== HISTORICAL DATA RECORD TABLE ===== */
+    .table-responsive-wrapper {
+        margin-top: 24px;
+        overflow-x: auto;
+    }
+
+    .table-pro {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        text-align: left;
+    }
+
+    .table-pro th {
+        color: #6b7280;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .table-pro td {
+        padding: 16px 20px;
+        font-size: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        color: #e5e7eb;
+    }
+
+    .table-pro tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.01);
+    }
+</style>
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<div class="dashboard">
+
+    <div class="control-panel">
+        <form method="POST" action="{% url 'home' %}" autocomplete="off" style="margin: 0; width: 100%; max-width: 650px; position: relative; overflow: visible;">
+            {% csrf_token %}
+            <div class="search-group">
+                <div style="position: relative; flex-grow: 2; display: flex; flex-direction: column;">
+                    <input 
+                        type="text"
+                        id="stock-search-input"
+                        name="stock" 
+                        value="{{ symbol }}" 
+                        class="form-control-pro" 
+                        style="width: 100%;"
+                        placeholder="Enter Stock Symbol for AI Analysis..." 
+                        required
+                    >
+                    
+                    <div id="autocomplete-results" style="
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        width: 100%;
+                        background: #090d16;
+                        border: 1px solid rgba(56, 189, 248, 0.3);
+                        border-top: none;
+                        border-radius: 0 0 8px 8px;
+                        z-index: 9999;
+                        max-height: 250px;
+                        overflow-y: auto;
+                        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+                    "></div>
+                </div>
+                
+                <select name="range" class="form-control-pro">
+                    <option value="1D" {% if range == "1D" %}selected{% endif %}>1D Window</option>
+                    <option value="1W" {% if range == "1W" %}selected{% endif %}>1W Window</option>
+                    <option value="1M" {% if range == "1M" %}selected{% endif %}>1M Window</option>
+                    <option value="1Y" {% if range == "1Y" %}selected{% endif %}>1Y Window</option>
+                </select>
+
+                <button type="submit" class="btn-pro">Analyze</button>
+            </div>
+        </form>
+
+        {% if user.is_authenticated and symbol %}
+        <form method="POST" action="{% url 'add_watchlist' %}" style="margin: 0;">
+            {% csrf_token %}
+            <input type="hidden" name="symbol" value="{{ symbol }}">
+            <button type="submit" class="btn-watchlist-pro">
+                <i class='bx bx-star'></i> Track Predictions
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="grid-main">
+
+        <div class="card-pro">
+            <div style="font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 0.5px;">
+                <i class='bx bx-brain' style="color: #38bdf8;"></i> AI Price Predictive Modeling
+            </div>
+            <div id="chart"></div>
+        </div>
+
+        <div class="stats-sidebar">
+
+            <div class="card-pro stat-box">
+                <div class="stat-title">Last Recorded Price</div>
+                <div class="stat-value" id="live-price-display">₹{{ price }}</div>
+            </div>
+
+            <div class="card-pro stat-box">
+                <div class="stat-title">Volume Traded</div>
+                <div class="stat-value">{{ formatted_volume }}</div>
+            </div>
+
+            <div class="card-pro stat-box {% if trend == 'UP' %}box-up{% else %}box-down{% endif %}">
+                <div class="stat-title">Predicted Direction</div>
+                <div class="stat-value {% if trend == 'UP' %}up{% else %}down{% endif %}">
+                    {% if trend == 'UP' %}
+                        <i class='bx bx-trending-up'></i> UPWARD BULL
+                    {% else %}
+                        <i class='bx bx-trending-down'></i> DOWNWARD BEAR
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-pro table-responsive-wrapper">
+        <div style="font-size: 12px; font-weight: 700; margin-bottom: 15px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
+            Historical Price Records
+        </div>
+        <table class="table-pro">
+            <thead>
+                <tr>
+                    <th>Date Stamp</th>
+                    <th>Opening Price</th>
+                    <th>Closing Price</th>
+                    <th>Session High</th>
+                    <th>Session Low</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td style="font-weight: 600; color: #9ca3af;">{{ row.date }}</td>
+                    <td>₹{{ row.open }}</td>
+                    <td style="font-weight: 700;">₹{{ row.close }}</td>
+                    <td class="up">₹{{ row.high }}</td>
+                    <td class="down">₹{{ row.low }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const input = document.getElementById("stock-search-input");
+        const resultsContainer = document.getElementById("autocomplete-results");
+        let debounceTimer;
+
+        input.addEventListener("input", function() {
+            clearTimeout(debounceTimer);
+            const query = input.value.trim();
+
+            if (query.length < 1) {
+                resultsContainer.style.display = "none";
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/api/autocomplete/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = "";
+                    
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        data.suggestions.forEach(item => {
+                            const row = document.createElement("div");
+                            row.style.padding = "12px 16px";
+                            row.style.cursor = "pointer";
+                            row.style.borderBottom = "1px solid rgba(255,255,255,0.03)";
+                            row.style.display = "flex";
+                            row.style.justifyContent = "space-between";
+                            row.style.alignItems = "center";
+                            row.style.fontSize = "13px";
+                            
+                            row.innerHTML = `
+                                <strong style="color: #38bdf8;">${item.ticker}</strong>
+                                <span style="color: #6b7280; font-size: 11px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name}</span>
+                            `;
+                            
+                            row.addEventListener("mouseenter", () => row.style.background = "rgba(56, 189, 248, 0.08)");
+                            row.addEventListener("mouseleave", () => row.style.background = "transparent");
+
+                            row.addEventListener("click", () => {
+                                input.value = item.ticker;
+                                resultsContainer.style.display = "none";
+                                input.closest("form").submit();
+                            });
+
+                            resultsContainer.appendChild(row);
+                        });
+                        resultsContainer.style.display = "block";
+                    } else {
+                        resultsContainer.style.display = "none";
+                    }
+                })
+                .catch(err => console.error("Autocomplete telemetry block dropped:", err));
+            }, 200);
+        });
+
+        document.addEventListener("click", function(e) {
+            if (e.target !== input && e.target !== resultsContainer) {
+                resultsContainer.style.display = "none";
+            }
+        });
+    });
+</script>
+
+{% if candles %}
+<script>
+    // FIXED BUG: Safe direct evaluation instead of unescaped quoted string parser
+    const candleData = {{ candles|safe }};
+
+    const options = {
+        chart: {
+            type: 'candlestick',
+            height: 400,
+            background: 'transparent',
+            toolbar: { show: false }
+        },
+        theme: { mode: 'dark' },
+        series: [{ data: candleData }],
+        grid: {
+            borderColor: 'rgba(255, 255, 255, 0.04)',
+            xaxis: { lines: { show: true } }
+        },
+        plotOptions: {
+            candlestick: {
+                colors: {
+                    upward: '#22c55e',
+                    downward: '#ef4444'
+                },
+                wick: { useFillColor: true }
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+            labels: { 
+                datetimeUTC: false, // <-- CRITICAL: Forces chart to follow your Python clock time, NOT UTC/GMT
+                style: { 
+                    colors: '#6b7280',
+                    fontFamily: 'Inter, sans-serif'
+                } 
+            }
+        },
+        yaxis: {
+            labels: { 
+                style: { 
+                    colors: '#6b7280',
+                    fontFamily: 'Inter, sans-serif'
+                } 
+            }
+        },
+        tooltip: { theme: 'dark' }
+    };
+
+    const chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+    
+    setInterval(() => {
+    // Ensures that any '.NS' string additions are left completely to your background utils configuration setup
+    fetch(`/api/live-stock/?symbol={{ symbol }}&range={{ range }}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data && data.candles && data.candles.length > 0) {
+            // Keep datetimeUTC set to false when background data updates execute
+            chart.updateOptions({
+                xaxis: {
+                    labels: { datetimeUTC: false }
+                }
+            }, false, false); 
+            
+            chart.updateSeries([{ data: data.candles }]);
+        }
+        const priceDisplay = document.getElementById("live-price-display");
+        if (priceDisplay && data.price) {
+            priceDisplay.textContent = `₹${parseFloat(data.price).toFixed(2)}`;
+        }
+    })
+    .catch(err => console.error("Live sync failed safely:", err));
+}, 15000);
+
+// 1. Hardcode your core stock dataset once directly in your JS file or HTML template
+const indianStocksPool = [
+    { ticker: "RELIANCE", name: "Reliance Industries Ltd." },
+    { ticker: "TCS", name: "Tata Consultancy Services Ltd." },
+    { ticker: "INFY", name: "Infosys Ltd." },
+    { ticker: "HDFCBANK", name: "HDFC Bank Ltd." },
+    { ticker: "SBIN", name: "State Bank of India" }
+];
+
+const searchInput = document.getElementById('search-input'); // Your input element
+const suggestionsBox = document.getElementById('suggestions-box'); // Your dropdown element
+
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toUpperCase();
+    suggestionsBox.innerHTML = ''; // Clear previous UI elements
+    
+    if (!query) return;
+
+    // 2. Filter locally in milliseconds without hitting ANY server
+    const matches = indianStocksPool.filter(stock => 
+        stock.ticker.startsWith(query) || stock.name.toUpperCase().includes(query)
+    ).slice(0, 6); // Limit UI to top 6 elements
+
+    // 3. Render items to dropdown immediately
+    matches.forEach(stock => {
+        const div = document.createElement('div');
+        div.textContent = `${stock.ticker} - ${stock.name}`;
+        div.addEventListener('click', () => {
+            searchInput.value = stock.ticker;
+            suggestionsBox.innerHTML = '';
+        });
+        suggestionsBox.appendChild(div);
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/4b9b6f2a1c.js" crossorigin="anonymous"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #07070c;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* background glow */
+        .blob {
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.25;
+    animation: float 10s infinite ease-in-out;
+}
+
+.blob1 {
+    background: #00c6ff;
+    top: 15%;
+    left: 15%;
+}
+
+.blob2 {
+    background: #f7a42f;
+    bottom: 10%;
+    right: 15%;
+    animation-delay: 3s;
+}
+
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-50px); }
+        }
+
+        .container {
+            z-index: 10;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .glass {
+            width: 380px;
+            padding: 35px;
+            border-radius: 18px;
+
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .input-box {
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 40px 12px 40px;
+            border-radius: 10px;
+
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
+            color: white;
+
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-box input:focus {
+            border: 1px solid #00c6ff;
+            box-shadow: 0 0 12px rgba(0,198,255,0.4);
+        }
+
+        .input-box i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+
+            background: linear-gradient(135deg, #00c6ff, #f4a525);
+            color: white;
+            font-weight: 600;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,198,255,0.3);
+        }
+
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        a {
+            color: #00c6ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* mobile */
+        @media (max-width: 420px) {
+            .glass {
+                width: 90vw;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="container">
+    <div class="glass">
+        <h2>Welcome Back</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="input-box">
+                <i class="fa fa-user"></i>
+                {{ form.username }}
+            </div>
+
+            <div class="input-box">
+                <i class="fa fa-lock"></i>
+                {{ form.password }}
+                <span class="toggle" onclick="togglePassword()">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="footer">
+            Don’t have an account?
+            <a href="/register/">Register</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    let input = document.querySelector("input[type='password']");
+    if (input.type === "password") {
+        input.type = "text";
+    } else {
+        input.type = "password";
+    }
+}
+</script>
+
+</body>
+</html>

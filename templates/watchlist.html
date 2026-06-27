@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}Asset Tracking Monitor | Terminal{% endblock %}
+
+{% block body %}
+
+<style>
+    /* ===== WATCHLIST TERMINAL FRAME ===== */
+    .watchlist-container {
+        max-width: 1100px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    /* ===== EXECUTIVE GLASS TERMINAL CARD ===== */
+    .terminal-panel {
+        background: var(--glass-panel);
+        border: 1px solid var(--border-glow);
+        border-radius: 12px;
+        padding: 24px;
+        position: relative;
+    }
+
+    /* ===== MONITOR RADAR HEADER ===== */
+    .monitor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-glow);
+        padding-bottom: 18px;
+        margin-bottom: 20px;
+    }
+
+    .monitor-tag {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .monitor-tag .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent-cyan);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .asset-count-badge {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        background: rgba(56, 189, 248, 0.08);
+        color: var(--accent-cyan);
+        padding: 4px 12px;
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        border-radius: 6px;
+    }
+
+    /* ===== STREAM LOG TRACK GRID ===== */
+    .monitor-stream {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .monitor-node {
+        background: rgba(9, 13, 22, 0.4);
+        border: 1px solid var(--border-glow);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .monitor-node:hover {
+        border-color: rgba(56, 189, 248, 0.25);
+        background: rgba(9, 13, 22, 0.7);
+    }
+
+    .monitor-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+    }
+
+    .asset-identity {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .asset-icon-wrapper {
+        width: 32px;
+        height: 32px;
+        background: var(--glass-surface);
+        border: 1px solid var(--border-glow);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4b5563;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .monitor-node:hover .asset-icon-wrapper {
+        color: var(--accent-cyan);
+        background: rgba(56, 189, 248, 0.05);
+        border-color: rgba(56, 189, 248, 0.2);
+    }
+
+    .asset-ticker {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #ffffff;
+    }
+
+    .action-buttons-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ===== INTERFACE UTILITY BUTTONS ===== */
+    .btn-alert-trigger {
+        background: var(--glass-surface);
+        border: 1px solid var(--border-glow);
+        color: #e5e7eb;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+    }
+
+    .btn-alert-trigger:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+
+    .btn-purge {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.15s ease;
+    }
+
+    .btn-purge:hover {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+    }
+
+    /* ===== SLIDE-DOWN ALERT ENGINE PANEL ===== */
+    .alert-panel {
+        background: rgba(5, 7, 15, 0.6);
+        border-top: 1px solid var(--border-glow);
+        padding: 20px;
+    }
+
+    .alert-form-grid {
+        display: grid;
+        grid-template-columns: 2fr 2fr auto auto;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #9ca3af;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .checkbox-container input {
+        cursor: pointer;
+    }
+
+    .btn-save-alert {
+        background: var(--gradient-primary);
+        border: none;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: opacity 0.15s ease;
+    }
+
+    .btn-save-alert:hover {
+        opacity: 0.9;
+        color: #ffffff;
+    }
+
+    /* ===== EMPTY RUNTIME STATE ===== */
+    .null-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(9, 13, 22, 0.2);
+        border: 1px dashed var(--border-glow);
+        border-radius: 8px;
+    }
+
+    /* ===== NAVIGATION ANCHOR ===== */
+    .navigation-anchor {
+        margin-top: 24px;
+        border-top: 1px solid var(--border-glow);
+        padding-top: 18px;
+    }
+
+    .btn-terminal-back {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6b7280;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s ease;
+    }
+
+    .btn-terminal-back:hover {
+        color: #ffffff;
+    }
+</style>
+
+<div class="watchlist-container">
+    <div class="terminal-panel">
+
+        <div class="monitor-header">
+            <div class="monitor-tag">
+                <div class="pulse-dot"></div>
+                <span>{{ request.user.username }} // Watchlist Monitor Matrix</span>
+            </div>
+            {% if stocks %}
+                <span class="asset-count-badge">{{ stocks|length }} Tracked Assets</span>
+            {% endif %}
+        </div>
+        
+        {% if stocks %}
+            <div class="monitor-stream">
+                {% for stock in stocks %}
+                    <div class="monitor-node">
+                        
+                        <div class="monitor-row">
+                            <div class="asset-identity">
+                                <div class="asset-icon-wrapper">
+                                    <i class='bx bx-line-chart-down'></i>
+                                </div>
+                                <div class="asset-ticker">
+                                    {{ stock.stock_symbol }}
+                                </div>
+                            </div>
+
+                            <div class="action-buttons-group">
+                                <button type="button" class="btn-alert-trigger" onclick="toggleAlert('{{ stock.id }}')">
+                                    <i class='bx bx-bell-plus'></i> Set Alert
+                                </button>
+                                
+                                <form method="POST" action="{% url 'remove_watchlist' stock.id %}" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-purge">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div id="alert-box-{{ stock.id }}" class="alert-panel" style="display: none;">
+                            <form method="POST" action="{% url 'create_alert' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="symbol" value="{{ stock.stock_symbol }}">
+                                
+                                <div class="alert-form-grid">
+                                    <div>
+                                        <input type="number" step="0.01" name="target_price" class="form-control" placeholder="Target Price (e.g. 150.00)" required>
+                                    </div>
+                                    <div>
+                                        <select name="condition" class="form-select">
+                                            <option value="above">Price Rises Above (▲)</option>
+                                            <option value="below">Price Drops Below (▼)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" name="enabled" class="form-check-input" checked>
+                                            <span>Enable Notifications</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn btn-save-alert">
+                                            Save Alert
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="null-state">
+                <i class='bx bx-folder-open' style="font-size: 36px; color: #374151; margin-bottom: 12px;"></i>
+                <h6 style="color: #9ca3af; font-weight: 600; font-size: 14px; margin-bottom: 4px;">Track Vector Registry Empty</h6>
+                <p style="color: #4b5563; font-size: 12px; max-width: 340px; margin: 0 auto;">No asset signatures discovered in local cache memory. Query symbols via the main compute array to track nodes.</p>
+            </div>
+        {% endif %}
+
+        <div class="navigation-anchor">
+            <a href="{% url 'home' %}" class="btn-terminal-back">
+                <i class='bx bx-left-arrow-alt'></i> Return to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function toggleAlert(stockId) {
+    const box = document.getElementById(`alert-box-${stockId}`);
+    if (box.style.display === "none") {
+        box.style.display = "block";
+    } else {
+        box.style.display = "none";
+    }
+}
+</script>
+
+{% endblock %}

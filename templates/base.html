@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock title %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    /* ===== COLORS & TOKENS ===== */
+    :root {
+      --bg-main: #02040a;
+      --glass-panel: rgba(10, 15, 30, 0.7);
+      --glass-surface: rgba(255, 255, 255, 0.03);
+      --border-glow: rgba(255, 255, 255, 0.06);
+      --text-primary: #f3f4f6;
+      --text-muted: #6b7280;
+      
+      --accent-cyan: #38bdf8;
+      --accent-indigo: #4f46e5;
+      --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+    }
+
+    /* ===== GLOBAL RESETS ===== */
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ===== TOP NAVIGATION BAR ===== */
+    .navbar {
+      background: #090d16 !important;
+      border-bottom: 1px solid var(--border-glow);
+      z-index: 1030;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ===== USER & NOTIFICATION MENU LAYOUT ===== */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dropdown-menu {
+      background: #090d16;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 6px;
+    }
+
+    .dropdown-item {
+      color: #9ca3af;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: normal;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+    }
+
+    /* Notification Dropdown Customizations */
+    .notif-dropdown {
+      min-width: 320px;
+      max-width: 400px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .btn-nav-utility {
+      background: var(--glass-surface);
+      border: 1px solid var(--border-glow);
+      color: #ffffff;
+      border-radius: 8px;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav-utility:hover, .btn-nav-utility:focus, .show > .btn-nav-utility {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--accent-cyan);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .badge-notif-pulse {
+      background-color: #ef4444;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 6px;
+      border: 2px solid #090d16;
+    }
+
+    /* ===== SIDEBAR NAVIGATION ===== */
+    .sidebar {
+      background: #05070f;
+      border-right: 1px solid var(--border-glow);
+      min-height: calc(100vh - 73px);
+      padding: 30px 16px !important;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #4b5563;
+      margin-bottom: 16px;
+      padding-left: 12px;
+    }
+
+    .nav-link {
+      color: #9ca3af;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .nav-link i {
+      font-size: 18px;
+      color: #4b5563;
+    }
+
+    .nav-link:hover {
+      background: var(--glass-surface);
+      color: #ffffff;
+    }
+
+    .nav-link:hover i {
+      color: var(--accent-cyan);
+    }
+
+    .nav-link.active {
+      background: var(--gradient-primary) !important;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    .nav-link.active i {
+      color: #ffffff;
+    }
+
+    /* ===== MAIN CONTENT WINDOW ===== */
+    .main-content {
+      padding: 40px 35px;
+    }
+
+    /* ===== CARD AND FORM STANDARDS ===== */
+    .card-pro {
+      background: var(--glass-panel);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .form-control, .form-select {
+      background: #090d16 !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: #fff !important;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    /* ===== LIVE TOAST SYSTEM ===== */
+    .toast-terminal {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast-terminal.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ===== SCROLLBAR STYLING ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2937;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  {% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1080; min-width: 320px;">
+      {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow" style="background: #10b981; color: white; border-radius: 8px;" role="alert">
+          <i class='bx bx-check-circle me-1'></i> {{ message }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <nav class="navbar navbar-expand-lg px-4 py-3 d-flex justify-content-between">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <i class='bx bx-line-chart' style="color: var(--accent-cyan);"></i>
+      <span>Stock Analyzer</span>
+    </a>
+
+    <div class="header-actions">
+      {% if user.is_authenticated %}
+        <div class="dropdown">
+          <button id="notif-btn" class="btn btn-nav-utility position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class='bx bx-bell' style="font-size: 20px;"></i>
+            <span id="notif-badge" class="badge rounded-pill badge-notif-pulse position-absolute top-0 start-100 translate-middle" 
+                  style="{% if unread_count > 0 %}display: inline-block;{% else %}display: none;{% endif %}">
+              {{ unread_count }}
+            </span>
+          </button>
+          
+          <ul class="dropdown-menu dropdown-menu-end mt-2 notif-dropdown" id="notif-list">
+  {% for n in notifications %}
+    <li id="notif-{{ n.id }}" class="dropdown-item border-bottom border-light border-opacity-10 py-2">
+      <div class="d-flex align-items-start justify-content-between gap-2">
+        <div class="d-flex align-items-start gap-2">
+          <i class='bx bx-chevron-right mt-1' style='color: var(--accent-cyan);'></i>
+          <span>{{ n.message }}</span>
+        </div>
+        <button class="btn btn-sm text-danger p-0 ms-2" onclick="deleteNotification(event, {{ n.id }})">
+          ✕
+        </button>
+      </div>
+    </li>
+  {% empty %}
+    <li class="dropdown-item text-muted text-center py-3" id="notif-empty-placeholder">
+      <i class='bx bx-bell-off d-block fs-5 mb-1'></i> No notifications
+    </li>
+  {% endfor %}
+</ul>
+        </div>
+
+        <div class="dropdown">
+          <button class="btn border-0 px-3 py-2 d-flex align-items-center gap-2" data-bs-toggle="dropdown" style="background: var(--glass-surface); border-radius: 8px; font-weight: 500; height: 42px; color: #ffffff;">
+            <i class='bx bx-user-circle' style="font-size: 18px; color: var(--accent-cyan);"></i>
+            <span>{{ user.username }}</span>
+            <span style="font-size: 10px; opacity: 0.5;">▼</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end mt-2">
+            <li><a class="dropdown-item" href="{% url 'watchlist' %}">My Watchlist</a></li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.06);"></li>
+            <li><a class="dropdown-item text-danger" href="/delete-account">Delete Account</a></li>
+          </ul>
+        </div>
+      {% else %}
+        <a href="/login" class="btn btn-primary px-4 py-2 border-0" style="background: var(--gradient-primary); border-radius: 8px; font-weight: 600;">
+          Login
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+
+      <div class="col-md-3 col-lg-2 sidebar">
+        <div class="sidebar-section-title">Menu Options</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+              <i class='bx bx-grid-alt'></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/market_trends' %}active{% endif %}" href="{% url 'market_trends' %}">
+              <i class='bx bx-trending-up'></i> Market Trends
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/prediction' %}active{% endif %}" href="/prediction">
+              <i class='bx bx-brain'></i> AI Predictions
+            </a>
+          </li>
+          <li class="nav-item">
+            {% if user.is_authenticated %}
+              <a class="nav-link {% if request.path == '/ai-copilot/' or request.path == '/ai-copilot' %}active{% endif %}" href="{% url 'ai_agent_copilot' %}">
+                <i class='bx bx-bot'></i> Ask Agent
+              </a>
+            {% else %}
+              <a class="nav-link" href="#" onclick="loginRequired()">
+                <i class='bx bx-bot'></i> Ask Agent
+              </a>
+            {% endif %}
+          </li>
+          <li class="nav-item">
+            {% if user.is_authenticated %}
+              <a class="nav-link {% if request.path == '/watchlist/' or request.path == '/watchlist' %}active{% endif %}" href="{% url 'watchlist' %}">
+                <i class='bx bx-star'></i> My Watchlist
+              </a>
+            {% else %}
+              <a class="nav-link" href="#" onclick="loginRequired()">
+                <i class='bx bx-star'></i> My Watchlist
+              </a>
+            {% endif %}
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">
+              <i class='bx bx-info-circle'></i> About Info
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-9 col-lg-10 main-content">
+        {% block body %}
+        {% endblock body %}
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast" class="toast-terminal"></div>
+
+  <script>
+    function showToast(message) {
+        let toast = document.getElementById("toast");
+        toast.innerHTML = `<i class='bx bx-bell' style='color: var(--accent-cyan); font-size: 16px;'></i> <span>${message}</span>`;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+  </script>
+
+  <script>
+    function loginRequired() {
+        alert("Please login first to access this feature.");
+        window.location.href = "/login/";
+    }
+  </script>
+
+  {% if user.is_authenticated %}
+<script>
+  // Tracks the unread count state natively
+  let currentTrackerCount = {{ unread_count|default:0 }};
+
+  function fetchLiveUpdates() {
+      fetch("{% url 'live_notifications_api' %}")
+      .then(response => response.json())
+      .then(data => {
+          // 1. Update the notification counter badge text
+          let badge = document.getElementById("notif-badge");
+          if (badge) {
+              if (data.unread_count > 0) {
+                  badge.style.display = "inline-block";
+                  badge.innerText = data.unread_count;
+              } else {
+                  badge.style.display = "none";
+              }
+          }
+
+          // 2. Process the notification list structure
+          if (data.notifications && data.notifications.length > 0) {
+              let list = document.getElementById("notif-list");
+              
+              // Remove the empty state text layout if notifications exist
+              let placeholder = document.getElementById("notif-empty-placeholder");
+              if (placeholder) placeholder.remove();
+
+              // Process in reverse chronological order so placement flows properly
+              data.notifications.reverse().forEach(notif => {
+                  // Check if this notification element ID already exists in our HTML DOM
+                  let existingElement = document.getElementById(`notif-${notif.id}`);
+                  
+                  if (!existingElement) {
+                      // IF IT DOES NOT EXIST: Create it! This is a truly fresh notification event.
+                      let item = document.createElement("li");
+                      item.id = `notif-${notif.id}`;
+                      item.className = "dropdown-item border-bottom border-light border-opacity-10 py-2";
+                      
+                      item.innerHTML = `
+                          <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div class="d-flex align-items-start gap-2">
+                                  <i class='bx bx-chevron-right mt-1' style='color: var(--accent-cyan);'></i>
+                                  <span>${notif.message}</span>
+                              </div>
+                              <button class="btn btn-sm text-danger p-0 ms-2" onclick="deleteNotification(event, ${notif.id})">
+                                  ✕
+                              </button>
+                          </div>
+                      `;
+
+                      // Insert new notifications at the absolute top of the dropdown list menu
+                      list.insertBefore(item, list.firstChild);
+
+                      // 3. Trigger the pop-up toast ONLY for brand-new incoming items
+                      // (We skip triggering toasts for old items matching on the very first page load sync)
+                      if (data.unread_count > currentTrackerCount) {
+                          showToast(notif.message);
+                      }
+                  }
+              });
+          }
+
+          // Sync tracker index count with server data
+          currentTrackerCount = data.unread_count;
+      })
+      .catch(err => console.error("Error monitoring live tracking nodes:", err));
+  }
+
+  // Monitor live updates silently in the background every 4 seconds
+  document.addEventListener("DOMContentLoaded", function() {
+      fetchLiveUpdates(); // Run immediately on load
+      setInterval(fetchLiveUpdates, 3000); // Check every 3 seconds
+  });
+
+  // Handles marking notifications as read
+  document.addEventListener("DOMContentLoaded", function() {
+      const btn = document.getElementById("notif-btn");
+      if (btn) {
+          btn.addEventListener("click", function() {
+              fetch("/mark-notifications-read/");
+              let badge = document.getElementById("notif-badge");
+              if (badge) badge.style.display = "none";
+              currentTrackerCount = 0; // reset local tracking index
+          });
+      }
+  });
+
+  // Fixed single item deletion engine
+  function deleteNotification(event, id) {
+      if (event) {
+          event.stopPropagation();
+          event.preventDefault();
+      }
+
+      fetch(`/delete-notification/${id}/`)
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              const item = document.getElementById(`notif-${id}`);
+              if (item) item.remove();
+
+              // Verify if the list container has become empty
+              const remainingNotifications = document.querySelectorAll("#notif-list li[id^='notif-']");
+              if (remainingNotifications.length === 0) {
+                  document.getElementById("notif-list").innerHTML = `
+                      <li class="dropdown-item text-muted text-center py-3" id="notif-empty-placeholder">
+                          <i class='bx bx-bell-off d-block fs-5 mb-1'></i> No notifications
+                      </li>
+                  `;
+              }
+          }
+      })
+      .catch(err => console.error("Error processing node removal:", err));
+  }
+</script>
+{% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

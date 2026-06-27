@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Confirm Account Deletion{% endblock %}
+
+{% block body %}
+
+<style>
+    /* ===== WRAPPER FOR CENTRAL BALANCE ===== */
+    .delete-container {
+        max-width: 550px;
+        margin: 60px auto;
+        padding: 0 15px;
+    }
+
+    /* ===== ALERT DESTRUCTIVE HEADER ===== */
+    .danger-accent-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        color: #ef4444;
+    }
+
+    .danger-icon {
+        font-size: 26px;
+    }
+
+    .danger-title {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+
+    /* ===== CONFIRMATION TEXT ===== */
+    .danger-text {
+        color: #9ca3af;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 28px;
+    }
+
+    /* ===== ACTION BUTTON ALIGNMENT ===== */
+    .button-layout-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .btn-delete-confirm {
+        background: #ef4444;
+        border: none;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+
+    .btn-delete-confirm:hover {
+        background: #dc2626;
+    }
+
+    .btn-delete-cancel {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.15s ease;
+    }
+
+    .btn-delete-cancel:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+</style>
+
+<div class="delete-container">
+    <div class="card-pro">
+        
+        <div class="danger-accent-bar">
+            <i class='bx bx-error-alt danger-icon'></i>
+            <h2 class="danger-title">Delete Account Permanent Confirmation</h2>
+        </div>
+
+        <p class="danger-text">
+            Are you sure you want to proceed? Deleting your account will permanently wipe your profile, custom watchlists, and algorithmic configuration settings. <strong>This action cannot be undone.</strong>
+        </p>
+
+        <form method="POST" style="margin: 0;">
+            {% csrf_token %}
+            <div class="button-layout-group">
+                <button type="submit" class="btn-delete-confirm">
+                    Delete My Account
+                </button>
+                <a href="{% url 'home' %}" class="btn-delete-cancel">
+                    Keep My Account
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

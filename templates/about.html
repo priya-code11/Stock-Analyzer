@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock title %}
+
+{% block body %}
+
+<style>
+
+/* ===== WRAPPER ===== */
+.about-container {
+  padding: 10px;
+}
+
+/* ===== CARD ===== */
+.card-pro {
+  background: #0a0a0a;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* ===== TITLE ===== */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h2 {
+  font-weight: 600;
+}
+
+.highlight {
+  color: #38bdf8;
+}
+
+/* ===== TEXT ===== */
+.text-muted-custom {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ===== LIVE DOT ===== */
+.live-dot {
+  height: 8px;
+  width: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* ===== LIST ===== */
+ul {
+  padding-left: 18px;
+}
+
+ul li {
+  margin-bottom: 6px;
+  color: #d1d5db;
+}
+
+/* ===== SMALL TEXT ===== */
+.info-text {
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+</style>
+
+<div class="about-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h2>About <span class="highlight">Stock AI Analyzer</span></h2>
+    <p class="text-muted-custom">
+      <span class="live-dot"></span>Smart decisions using data & AI
+    </p>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="card-pro">
+    <div class="section-title">📊 Project Overview</div>
+    <p class="info-text">
+      Stock AI Analyzer is a modern web app built with Django that helps users
+      make smarter trading decisions using real-time data and technical analysis.
+      It generates signals like <b>BUY</b>, <b>SELL</b>, and <b>HOLD</b>.
+    </p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="card-pro">
+    <div class="section-title">🚀 Features</div>
+    <ul>
+      <li>📡 Real-time stock data</li>
+      <li>🤖 AI-based prediction</li>
+      <li>📉 Moving Average (MA20)</li>
+      <li>📊 RSI indicator</li>
+      <li>🌙 Clean dark UI</li>
+      <li>📁 Portfolio tracking (coming soon)</li>
+    </ul>
+  </div>
+
+  <!-- TECH -->
+  <div class="card-pro">
+    <div class="section-title">⚙️ Technologies</div>
+    <ul>
+      <li>🐍 Django (Python)</li>
+      <li>🌐 HTML, CSS, Bootstrap</li>
+      <li>📊 yFinance API</li>
+      <li>📦 Pandas</li>
+    </ul>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="card-pro">
+    <div class="section-title">🧠 How It Works</div>
+
+    <p class="info-text">
+      The system analyzes stock data using indicators like Moving Average and RSI
+      to determine market conditions.
+    </p>
+
+    <ul>
+      <li><span class="text-success">BUY</span> → Strong trend</li>
+      <li><span class="text-danger">SELL</span> → Weak or falling trend</li>
+      <li><span class="text-warning">HOLD</span> → Uncertain market</li>
+    </ul>
+  </div>
+
+</div>
+
+{% endblock body %}

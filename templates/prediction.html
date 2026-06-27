@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+{% block title %}Quantum Intelligence Terminal | Predictions{% endblock title %}
+
+{% block body %}
+
+<style>
+    /* ===== QUANTUM MATRIX FRAMEWORK ===== */
+    .terminal-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 10px;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* ===== PROFESSIONAL GRID CONFIGURATION ===== */
+    .terminal-grid {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    @media (max-width: 992px) {
+        .terminal-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ===== EXECUTIVE GLASS CARDS ===== */
+    .matrix-card {
+        background: linear-gradient(145deg, #0b0f19, #06080d);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .matrix-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.15), transparent);
+    }
+
+    /* ===== RADAR DATA TITLE HEADER ===== */
+    .terminal-tag {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .terminal-tag .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: #06b6d4;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #06b6d4;
+    }
+
+    /* ===== QUANTUM SEARCH ARCHITECTURE ===== */
+    .search-wrapper {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4b5563;
+        font-size: 16px;
+        z-index: 10;
+    }
+
+    .pro-input {
+        background: #030712 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #ffffff !important;
+        padding: 14px 14px 14px 42px !important;
+        border-radius: 8px !important;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        width: 100%;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .pro-input:focus {
+        border-color: #06b6d4 !important;
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
+        background: #030712 !important;
+        outline: none;
+    }
+
+    /* ===== ACTION BUTTON STRATEGY ===== */
+    .btn-compute {
+        background: #ffffff;
+        color: #030712;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+
+    .btn-compute:hover {
+        background: #06b6d4;
+        color: #030712;
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        transform: translateY(-1px);
+        cursor: pointer;
+    }
+
+    /* ===== QUANTUM SIGNAL GRAPHICS ===== */
+    .signal-badge-panel {
+        text-align: center;
+        padding: 35px 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        background: rgba(3, 7, 18, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .signal-output {
+        font-size: 46px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        line-height: 1;
+    }
+
+    .sig-buy { color: #06b6d4; text-shadow: 0 0 30px rgba(6, 182, 212, 0.4); }
+    .sig-sell { color: #f43f5e; text-shadow: 0 0 30px rgba(244, 63, 94, 0.4); }
+    .sig-hold { color: #fbbf24; text-shadow: 0 0 30px rgba(251, 191, 36, 0.4); }
+
+    /* ===== TELEMETRY DATABUFFER ROWS ===== */
+    .telemetry-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .telemetry-row:last-child {
+        border-bottom: none;
+    }
+
+    .telemetry-label {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .telemetry-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #f3f4f6;
+        text-align: right;
+    }
+
+    /* ===== RUNNING LOG SYSTEM BLOCK ===== */
+    .logic-stream {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .logic-node {
+        background: rgba(3, 7, 18, 0.4);
+        border-left: 3px solid #1f2937;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        font-size: 13px;
+    }
+
+    .logic-node.node-buy { border-left-color: #06b6d4; }
+    .logic-node.node-sell { border-left-color: #f43f5e; }
+    .logic-node.node-hold { border-left-color: #fbbf24; }
+
+    .node-header {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+</style>
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+<div class="terminal-container">
+    <div class="terminal-grid">
+        
+        <div class="d-flex flex-column gap-4">
+            
+            <div class="matrix-card" style="position: relative; overflow: visible;">
+    <div class="terminal-tag">
+        <div class="pulse-dot"></div>
+        <span>Asset Execution Terminal</span>
+    </div>
+
+    <form method="POST" action="{% url 'prediction_view' %}" autocomplete="off">
+        {% csrf_token %}
+        <div class="search-wrapper" style="position: relative;">
+            <i class='bx bx-search-alt-2'></i>
+            <input 
+                type="text" 
+                id="stock-search-input"
+                name="stock" 
+                value="{% if name %}{{ name }}{% elif symbol %}{{ symbol }}{% else %}RELIANCE.NS{% endif %}" 
+                class="pro-input" 
+                placeholder="Search any global or national asset ticker symbol (e.g., INFY.NS, TSLA)..." 
+                required
+            >
+            
+            <div id="autocomplete-results" style="
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #0b0f19;
+                border: 1px solid rgba(6, 182, 212, 0.3);
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                z-index: 9999;
+                max-height: 250px;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            "></div>
+        </div>
+        <button type="submit" class="btn-compute">Run Analysis</button>
+    </form>
+</div>
+
+            <div class="matrix-card">
+                <div class="terminal-tag">
+                    <i class='bx bx-git-branch' style="color: #4b5563;"></i>
+                    <span>Algorithmic Matrix Profiles</span>
+                </div>
+
+                <div class="logic-stream">
+                    <div class="logic-node node-buy">
+                        <div class="node-header" style="color: #06b6d4;">BULLISH CONTEXT RUNTIME</div>
+                        <span style="color: #9ca3af;">Assembles strategy profiles when pricing tracks above configured MA arrays while keeping oversold limits.</span>
+                    </div>
+                    <div class="logic-node node-sell">
+                        <div class="node-header" style="color: #f43f5e;">BEARISH CONTEXT RUNTIME</div>
+                        <span style="color: #9ca3af;">Executed upon systematic trendline structural breakdowns combined with momentum overhead peaks.</span>
+                    </div>
+                    <div class="logic-node node-hold">
+                        <div class="node-header" style="color: #fbbf24;">CONSOLIDATION RANGE RUNTIME</div>
+                        <span style="color: #9ca3af;">Active when price velocities execute inside tight horizontal safety channels lacking asset momentum vectors.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex flex-column gap-4">
+            
+            {% if error %}
+            <div class="matrix-card" style="border-color: rgba(244, 63, 94, 0.3); background: linear-gradient(145deg, #1e1115, #06080d);">
+                <div class="d-flex align-items-center gap-3">
+                    <i class='bx bx-error-alt' style="font-size: 24px; color: #f43f5e;"></i>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 700; color: #f43f5e; letter-spacing: 1px; text-transform: uppercase;">Hardware Intercept Fault</div>
+                        <div style="font-size: 14px; color: #e5e7eb; margin-top: 2px;">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not prediction and not stock.price %}
+            <div class="matrix-card d-flex flex-column align-items-center justify-content-center text-center" style="min-height: 400px; border-style: dashed;">
+                <i class='bx bx-terminal' style="font-size: 48px; color: #1f2937; margin-bottom: 15px;"></i>
+                <div style="font-size: 16px; font-weight: 600; color: #6b7280;">Terminal Execution Idle</div>
+                <p style="font-size: 13px; color: #4b5563; max-width: 320px; margin-top: 5px;">Input a valid target symbol signature inside the control module panel to compile real-time telemetry analytics models.</p>
+            </div>
+            {% endif %}
+
+            {% if prediction %}
+            <div class="matrix-card">
+                <div class="terminal-tag">
+                    <i class='bx bx-radar' style="color: #4b5563;"></i>
+                    <span>Synthesized Output Vector Matrix</span>
+                </div>
+
+                <div class="row align-items-center bg-transparent g-3">
+                    <div class="col-md-6">
+                        <div class="signal-badge-panel">
+                            <div class="signal-output 
+                                {% if prediction == 'BUY' %}sig-buy
+                                {% elif prediction == 'SELL' %}sig-sell
+                                {% else %}sig-hold
+                                {% endif %}
+                            ">
+                                {{ prediction }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2">
+                            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #4b5563; font-weight: 700;">Vector Reliability Rating</div>
+                            <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-top: 4px; display: flex; align-items: baseline; gap: 4px;">
+                                <span>{{ confidence }}</span>
+                            </div>
+                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.05); margin-top: 12px; border-radius: 2px;">
+                                <div class="progress-bar" style="background: #06b6d4; width: {{ confidence|default:'0%' }}; box-shadow: 0 0 10px #06b6d4;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if reason %}
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: #9ca3af; line-height: 1.5;">
+                    <strong style="color: #f3f4f6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Algorithmic Justification Stream:</strong>
+                    {{ reason }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if stock and stock.price %}
+            <div class="matrix-card">
+                <div class="terminal-tag">
+                    <i class='bx bx-slider-alt' style="color: #4b5563;"></i>
+                    <span>Telemetry Stream Matrix Output</span>
+                </div>
+
+                <div class="row g-4 bg-transparent">
+                    <div class="col-md-6">
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Asset Identity Tag</span>
+                            <span class="telemetry-value" style="color: #06b6d4;">{{ name|default:symbol }}</span>
+                        </div>
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Spot Reference Value</span>
+                            <span class="telemetry-value">₹{{ stock.price }}</span>
+                        </div>
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Vector Velocity State</span>
+                            <span class="telemetry-value {% if stock.ma20 and stock.price > stock.ma20 %}text-info{% else %}text-danger{% endif %}" style="font-weight: 700;">
+                                {% if stock.ma20 and stock.price > stock.ma20 %}
+                                    ▲ BULLISH TRAJECTORY
+                                {% else %}
+                                    ▼ BEARISH RETRACTION
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Moving Average Threshold (MA20)</span>
+                            <span class="telemetry-value">₹{{ stock.ma20|default:"N/A" }}</span>
+                        </div>
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Relative Strength Coefficient (RSI)</span>
+                            <span class="telemetry-value">
+                                {{ stock.rsi|default:"N/A" }}
+                                {% if stock.rsi %}
+                                <span style="font-size: 11px; font-weight: 700; margin-left: 4px; display: inline-block; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.03);">
+                                    {% if stock.rsi > 70 %}
+                                        <span style="color: #f43f5e;">OVERBOUGHT</span>
+                                    {% elif stock.rsi < 30 %}
+                                        <span style="color: #06b6d4;">OVERSOLD</span>
+                                    {% else %}
+                                        <span style="color: #9ca3af;">EQUILIBRIUM</span>
+                                    {% endif %}
+                                </span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="telemetry-row">
+                            <span class="telemetry-label">Core Engine Telemetry Lock</span>
+                            <span class="telemetry-value" style="color: #22c55e;"><i class='bx bx-check-shield' style="vertical-align: middle; font-size: 16px;"></i> NOMINAL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const input = document.getElementById("stock-search-input");
+        const resultsContainer = document.getElementById("autocomplete-results");
+        let debounceTimer;
+
+        input.addEventListener("input", function() {
+            clearTimeout(debounceTimer);
+            const query = input.value.trim();
+
+            if (query.length < 1) {
+                resultsContainer.style.display = "none";
+                return;
+            }
+
+            // Debounce for 200ms to minimize API hammering while user types fast
+            debounceTimer = setTimeout(() => {
+                fetch(`/api/autocomplete/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = "";
+                    
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        data.suggestions.forEach(item => {
+                            const row = document.createElement("div");
+                            row.style.padding = "12px 16px";
+                            row.style.cursor = "pointer";
+                            row.style.borderBottom = "1px solid rgba(255,255,255,0.03)";
+                            row.style.display = "flex";
+                            row.style.justifyContent = "space-between";
+                            row.style.fontSize = "13px";
+                            row.className = "autocomplete-row";
+                            
+                            row.innerHTML = `
+                                <strong style="color: #06b6d4;">${item.ticker}</strong>
+                                <span style="color: #6b7280; font-size: 11px;">${item.name}</span>
+                            `;
+                            
+                            // Hover animations matching Quantum Terminal aesthetic
+                            row.addEventListener("mouseenter", () => {
+                                row.style.background = "rgba(6, 182, 212, 0.08)";
+                            });
+                            row.addEventListener("mouseleave", () => {
+                                row.style.background = "transparent";
+                            });
+
+                            // Action when option is selected
+                            row.addEventListener("click", () => {
+                                input.value = item.ticker;
+                                resultsContainer.style.display = "none";
+                                // Optional: Auto-submit form immediately upon selection
+                                input.closest("form").submit();
+                            });
+
+                            resultsContainer.appendChild(row);
+                        });
+                        resultsContainer.style.display = "block";
+                    } else {
+                        resultsContainer.style.display = "none";
+                    }
+                })
+                .catch(err => console.error("Autocomplete error:", err));
+            }, 200);
+        });
+
+        // Hide floating panel when clicking anywhere outside of it
+        document.addEventListener("click", function(e) {
+            if (e.target !== input && e.target !== resultsContainer) {
+                resultsContainer.style.display = "none";
+            }
+        });
+    });
+</script>
+{% endblock body %}
