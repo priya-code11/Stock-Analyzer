@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Home app URLs
-    path('', include('Home.urls')),
+    path('', include('stock_analyzer.urls')),
 
     # Authentication
     path('login/',auth_views.LoginView.as_view(template_name='login.html'),name='login'),
